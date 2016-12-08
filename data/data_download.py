@@ -55,9 +55,6 @@ def main():
     if not os.path.isdir(data_folder):
         os.mkdir(data_folder)
 
-    if not os.path.isdir(data_folder + '_crop'):
-        os.mkdir(data_folder + '_crop')
-
     for i in range(50):
         t = Thread(target=thread_work)
         t.daemon = True
@@ -69,7 +66,20 @@ def main():
     q.join()
     print('\t\tDownload - Done!')
 
+    images = os.listdir(data_folder)
+    for item in imgs_names:
+        img_path = os.path.join(data_folder, item.split()[0])
+        if os.path.exists(img_path):
+            filesize = os.stat(img_path).st_size
+            if filesize <= 10 * 1024:
+                print('Remove %s which size %d bytes below 10 * 1024 bytes' % (
+                    item.split()[0], filesize))
+                os.remove(img_path)
+
     # crop the downloaded images
+    if not os.path.isdir(data_folder + '_crop'):
+        os.mkdir(data_folder + '_crop')
+
     crop_params = open('crop.txt', 'r').read().strip().split('\n')
     for item in crop_params:
         q.put(['crop', item.split(maxsplit=1)])
