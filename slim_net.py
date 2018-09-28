@@ -8,7 +8,8 @@ def fcn8s_arg_scope(weight_decay=0.0005):
                         weights_regularizer=slim.l2_regularizer(weight_decay),
                         biases_initializer=tf.zeros_initializer()):
         with slim.arg_scope([slim.conv2d, slim.max_pool2d], padding="SAME"):
-            with slim.arg_scope([slim.conv2d_transpose], padding="VALID") as arg_sc:
+            with slim.arg_scope([slim.conv2d_transpose], padding="VALID",
+                                biases_initializer=None) as arg_sc:
                 return arg_sc
 
 
