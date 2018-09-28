@@ -1,9 +1,12 @@
 import numpy as np
 import scipy.misc
 import tensorflow as tf
+import tensorflow.contrib.slim as slim
 
-from net import FCN8s
+import slim_net
 
+
+NUM_CLASSES = 2
 
 COLOR_SET = [
     [255, 255, 255], [125, 135, 185], [190, 193, 212], [214, 188, 192],
@@ -25,39 +28,39 @@ def build_image(filename):
 
 
 def save_image(result, filename):
-    s = set()
     _, h, w = result.shape
-    result = result.reshape(h*w)
+    result = result.reshape(h * w)
     image = []
     for v in result:
         image.append(COLOR_SET[v])
-        if v not in s:
-            s.add(v)
     image = np.array(image)
     image = np.reshape(image, (h, w, 3))
     scipy.misc.imsave(filename, image)
 
 
-def test(net, image_name):
+def test(image_name):
+    inputs = tf.placeholder(tf.float32, [1, None, None, 3])
+    with slim.arg_scope(slim_net.fcn8s_arg_scope()):
+        logits, _ = slim_net.fcn8s(inputs, NUM_CLASSES)
+
     image = build_image(image_name)
 
     with tf.Session() as sess:
-        saver = tf.train.Saver(tf.all_variables())
+        saver = tf.train.Saver(tf.global_variables())
         model_file = tf.train.latest_checkpoint('./model/')
+
         if model_file:
             saver.restore(sess, model_file)
         else:
             raise Exception('Testing needs pre-trained model!')
 
         feed_dict = {
-            net['image']: image,
-            net['drop_rate']: 1
+            inputs: image,
         }
-        result = sess.run(tf.argmax(net['score'], dimension=3),
-                          feed_dict=feed_dict)
+        result = sess.run(tf.argmax(logits, axis=-1), feed_dict=feed_dict)
     return result
 
 
 if __name__ == '__main__':
-    fcn = FCN8s(2)
-    save_image(test(fcn.net, 'image.png'), 'result.png')
+    result_image = test("image.jpg")
+    save_image(result_image, "result.jpg")
