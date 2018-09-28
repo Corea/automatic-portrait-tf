@@ -1,0 +1,3 @@
+Pillow
+requests
+tensorflow>=1.6
