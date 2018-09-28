@@ -1,19 +1,16 @@
-# automatic-portrait-tf 
-
+# TensorFlow implementation of Automatic Portrait Segmentation
 
 ## Setup
 
 ### Dependencies
-- [tensorflow](https://github.com/tensorflow/tensorflow)
-- [caffe](https://github.com/BVLC/caffe)
-- [numpy](https://github.com/numpy/numpy)
-- [scipy](https://github.com/scipy/scipy)
-- [Pillow](https://github.com/python-pillow/Pillow)
+- Python 3.6+
+- [TensorFlow](https://github.com/tensorflow/tensorflow) 1.6+
+- [caffe](https://github.com/BVLC/caffe) (only use to transform pretrained model)
 
-
-### Data Preparation
+### Prepare environment, model and data
 
 ```shell
+$ pip install -r requirements.txt
 $ wget http://dl.caffe.berkeleyvision.org/fcn8s-heavy-pascal.caffemodel
 $ python caffe_mat_transform.py
 $ mkdir model
